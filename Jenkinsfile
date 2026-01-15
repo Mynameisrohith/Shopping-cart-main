@@ -13,12 +13,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/Mynameisrohith/Shopping-cart-main.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
