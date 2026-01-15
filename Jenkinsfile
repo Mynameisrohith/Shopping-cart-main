@@ -36,14 +36,34 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
+
+        // ---------------- CD STAGES START HERE ----------------
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t shopping-cart-app:latest .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                bat '''
+                docker stop shopping-cart || exit 0
+                docker rm shopping-cart || exit 0
+                docker run -d -p 8080:8080 --name shopping-cart shopping-cart-app:latest
+                '''
+            }
+        }
+
+        // ---------------- CD STAGES END HERE ----------------
     }
 
     post {
         success {
-            echo 'CI Pipeline SUCCESS'
+            echo 'CI/CD Pipeline SUCCESS'
         }
         failure {
-            echo 'CI Pipeline FAILED'
+            echo 'CI/CD Pipeline FAILED'
         }
         always {
             cleanWs()
